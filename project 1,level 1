@@ -1,0 +1,91 @@
+# Importing required libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load dataset from your local file path
+data = pd.read_csv(r"C:\Users\hp\Downloads\retail_sales_data.csv.csv")  
+
+# Display the first few rows
+print("First few rows of the dataset:")
+print(data.head())
+
+# Summary of the dataset
+print("\nDataset Summary:")
+print(data.info())
+
+# Check for missing values
+print("\nMissing Values:")
+print(data.isnull().sum())
+
+# Drop duplicates
+data.drop_duplicates(inplace=True)
+
+# Handling missing values (example: filling 'Sales' column with mean)
+if 'sales' in data.columns:
+    data['sales'] = data['sales'].fillna(data['sales'].mean())
+
+# Convert date column to datetime format (replace 'date' with your date column name)
+if 'date' in data.columns:
+    data['date'] = pd.to_datetime(data['date'])
+    print("\nConverted Date column to datetime format.")
+
+# Basic descriptive statistics
+print("\nDescriptive Statistics:")
+print(data.describe())
+
+# Mode and Median of 'sales' column (if applicable)
+if 'sales' in data.columns:
+    print("\nMode of Sales:", data['sales'].mode()[0])
+    print("Median of Sales:", data['sales'].median())
+
+# Time Series Analysis
+if 'date' in data.columns and 'sales' in data.columns:
+    # Aggregate sales by date
+    time_series = data.groupby('date')['sales'].sum()
+
+    # Plot sales trends
+    plt.figure(figsize=(12, 6))
+    plt.plot(time_series, label='Sales Trend', color='blue')
+    plt.title('Sales Trends Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Total Sales')
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+# Product Analysis (replace 'product_id' with your product column name)
+if 'product_id' in data.columns and 'sales' in data.columns:
+    product_sales = data.groupby('product_id')['sales'].sum().sort_values(ascending=False)
+
+    # Visualize top 10 products
+    product_sales.head(10).plot(kind='bar', figsize=(10, 6), color='orange')
+    plt.title('Top 10 Products by Sales')
+    plt.xlabel('Product')
+    plt.ylabel('Total Sales')
+    plt.show()
+
+# Heatmap for correlation analysis (using only numeric columns)
+numeric_data = data[['price', 'quantity', 'sales']]  # Select numeric columns
+plt.figure(figsize=(10, 8))
+sns.heatmap(numeric_data.corr(), annot=True, cmap='coolwarm')
+plt.title('Correlation Heatmap (Numeric Columns Only)')
+plt.show()
+
+# Customer Analysis (if customer data is available, replace column names as needed)
+if 'quantity' in data.columns:
+    # Plotting quantity distribution
+    plt.figure(figsize=(10, 6))
+    sns.histplot(data['quantity'], bins=20, kde=True, color='purple')
+    plt.title('Quantity Distribution')
+    plt.xlabel('Quantity')
+    plt.ylabel('Frequency')
+    plt.show()
+
+# Recommendations (example insights, you can adjust based on your findings)
+print("\nActionable Recommendations:")
+print("1. Focus on promoting high-selling products during peak seasons.")
+print("2. Target marketing campaigns towards customer segments with high purchasing power.")
+print("3. Optimize inventory management for time periods with higher sales.")
+print("4. Monitor sales trends for product improvement opportunities.")
